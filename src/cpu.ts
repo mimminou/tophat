@@ -36,6 +36,7 @@ import { CapacityBar } from './capacity.js';
 export const CpuMonitor = GObject.registerClass(
   class CpuMonitor extends TopHatMonitor {
     private usage;
+    private temp;
     private menuCpuUsage;
     private menuCpuCap;
     private menuCpuModel;
@@ -62,6 +63,13 @@ export const CpuMonitor = GObject.registerClass(
         y_align: Clutter.ActorAlign.CENTER,
       });
       this.add_child(this.usage);
+
+      this.temp = new St.Label({
+        text: MeterNoVal,
+        style_class: 'tophat-panel-usage tophat-panel-usage-wider',
+        y_align: Clutter.ActorAlign.CENTER,
+      });
+      this.add_child(this.temp);
 
       this.meter.setNumBars(1);
       this.meter.setOrientation(Orientation.Vertical);
@@ -266,6 +274,7 @@ export const CpuMonitor = GObject.registerClass(
       id = vitals.connect('notify::cpu-temp', () => {
         // console.log(`cpu-temp: ${vitals.cpu_temp}`);
         const s = vitals.cpu_temp.toFixed(0) + ' °C';
+        this.temp.text = s;
         this.menuCpuTemp.text = s;
       });
       this.vitalsSignals.push(id);
